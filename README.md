@@ -104,7 +104,7 @@ Unchanged
 {theorem}
 ~~~
 
-This filter can be combined with [`pandoc-numbering`](https://github.com/chdemko/pandoc-numbering):
+This filter can be combined with [pandoc-numbering](https://github.com/chdemko/pandoc-numbering):
 
 ~~~
 $ cat pandoc-numbering-listof-sample.md
