@@ -1,0 +1,4 @@
+include README.md
+include pandoc-listof-sample.md
+include pandoc-numbering-listof-sample.md
+
