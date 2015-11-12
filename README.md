@@ -160,8 +160,8 @@ Converting the `pandoc-numbering-listof-sample.md` file will give:
 
 ~~~
 $ pandoc \
-> --filter ../pandoc-numbering/pandoc_numbering.py \
-> --filter ./pandoc_listof.py \
+> --filter pandoc-numbering \
+> --filter pandoc-listof \
 > pandoc-numbering-listof-sample.md -t markdown
 This is the first section
 =========================
