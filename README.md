@@ -156,7 +156,7 @@ Unchanged
 Exercise ##
 ~~~
 
-Converting the `pandoc-listof-sample.md` file will give:
+Converting the `pandoc-numbering-listof-sample.md` file will give:
 
 ~~~
 $ pandoc \
