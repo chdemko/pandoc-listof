@@ -47,7 +47,7 @@ def stringify(x, format):
         elif key == 'Code':
             result.append(val[1])
         elif key == 'Math':
-            # Modified from the stringify function in the padocfilter package
+            # Modified from the stringify function in the pandocfilter package
             if format == 'latex':
                 result.append('$' + val[1] + '$')
             else:
