@@ -106,7 +106,11 @@ def listof(key, value, format, meta):
 
                 if format == 'latex':
                     # Special case for LaTeX output
-                    return Para([RawInline('tex', '\\makeatletter\\@starttoc{' + name + '}\\makeatother')])
+                    if 'toccolor' in meta:
+                        colorlink = '\\hypersetup{linkcolor=' + stringify(meta['toccolor']['c'], format) + '}'
+                    else:
+                        colorlink = '\\hypersetup{linkcolor=black}'
+                    return Para([RawInline('tex', colorlink + '\\makeatletter\\@starttoc{' + name + '}\\makeatother')])
 
                 else:
                     # Prepare the list
