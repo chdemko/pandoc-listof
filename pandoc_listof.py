@@ -4,7 +4,7 @@
 Pandoc filter to create lists of all kinds
 """
 
-from pandocfilters import walk, Str, Plain, Link, BulletList, Para, RawInline
+from pandocfilters import toJSONFilters, walk, Str, Plain, Link, BulletList, Para, RawInline
 from functools import reduce
 import io
 import sys
@@ -14,26 +14,6 @@ import re
 import unicodedata
 
 collections = {}
-
-def toJSONFilters(actions):
-    """Converts a list of actions into a filter
-    """
-    try:
-        input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-    except AttributeError:
-        # Python 2 does not have sys.stdin.buffer.
-        # REF: http://stackoverflow.com/questions/2467928/python-unicodeencodeerror-when-reading-from-stdin
-        input_stream = codecs.getreader("utf-8")(sys.stdin)
-
-    doc = json.loads(input_stream.read())
-
-    if len(sys.argv) > 1:
-        format = sys.argv[1]
-    else:
-        format = ""
-
-    altered = reduce(lambda x, action: walk(x, action, format, doc[0]['unMeta']), actions, doc)
-    json.dump(altered, sys.stdout)
 
 def stringify(x, format):
     """Walks the tree x and returns concatenated string content,
@@ -83,7 +63,7 @@ def collect(key, value, format, meta):
                 collections[name] = []
 
             # Store the new item
-            collections[name].append({'identifier': identifier, 'text': stringify(text, format)}) 
+            collections[name].append({'identifier': identifier, 'text': stringify(text, format)})
 
             # Special case for LaTeX output
             if format == 'latex':
@@ -120,7 +100,14 @@ def listof(key, value, format, meta):
                     for value in collections[name]:
 
                         # Add an item to the list
-                        elements.append([Plain([Link([Str(value['text'])],['#' + name + ':' + value['identifier'], ''])])])
+                        try:
+                            # pandoc 1.15
+                            link = Link([Str(value['text'])],['#' + name + ':' + value['identifier'], ''])
+                        except ValueError:
+                            # pandoc 1.16
+                            link = Link(['', [], []], [Str(value['text'])],['#' + name + ':' + value['identifier'], ''])
+
+                        elements.append([Plain([link])])
 
                     # Return a bullet list
                     return BulletList(elements)
