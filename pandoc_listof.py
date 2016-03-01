@@ -6,6 +6,7 @@ Pandoc filter to create lists of all kinds
 
 from pandocfilters import toJSONFilters, walk, Str, Plain, Link, BulletList, Para, RawInline
 from functools import reduce
+from copy import deepcopy
 import io
 import sys
 import codecs
@@ -36,6 +37,9 @@ def stringify(x, format):
             result.append(" ")
         elif key == 'Space':
             result.append(" ")
+        elif key == 'Note':
+            # Do not stringify value from Note node
+            del val[:]
 
     walk(x, go, format, {})
     return ''.join(result)
@@ -63,11 +67,12 @@ def collect(key, value, format, meta):
                 collections[name] = []
 
             # Store the new item
-            collections[name].append({'identifier': identifier, 'text': stringify(text, format)})
+            string = stringify(deepcopy(text), format)
+            collections[name].append({'identifier': identifier, 'text': string})
 
             # Special case for LaTeX output
             if format == 'latex':
-                latex = '\\phantomsection\\addcontentsline{' + name + '}{figure}{' + stringify(text, format) + '}'
+                latex = '\\phantomsection\\addcontentsline{' + name + '}{figure}{' + string + '}'
                 text.insert(0, RawInline('tex', latex))
                 value[1] = text
 
