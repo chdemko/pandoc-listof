@@ -1,219 +1,20 @@
 # pandoc-listof
+[![Build Status](https://img.shields.io/travis/chdemko/pandoc-listof.svg)](http://travis-ci.org/chdemko/pandoc-listof)
+[![Coveralls](https://img.shields.io/coveralls/chdemko/pandoc-listof.svg)](https://coveralls.io/github/chdemko/pandoc-listof)
+[![PyPI version](https://img.shields.io/pypi/v/pandoc-listof.svg)](https://pypi.python.org/pypi/pandoc-listof/)
+[![License](https://img.shields.io/pypi/l/pandoc-listof.svg)](http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html)
+[![Downloads](https://img.shields.io/pypi/dm/pandoc-listof.svg)](https://pypi.python.org/pypi/pandoc-listof/)
+[![Python version](https://img.shields.io/pypi/pyversions/pandoc-listof.svg)](https://pypi.python.org/pypi/pandoc-listof/)
+[![Development Status](https://img.shields.io/pypi/status/pandoc-listof.svg)](https://pypi.python.org/pypi/pandoc-listof/)
 
 *pandoc-listof* is a [pandoc] filter for listof all kinds of things.
 
-Each paragraph containing only a string `{`*name*`}` will be replaced by a list of link pointing to all `span` whose `id`
-is *name*`:`*identifier*.
-
-Demonstration: Using [pandoc-listof-sample.md] as input gives output files in [pdf], [tex], [html], [epub], [md] and
-other formats.
-
-~~~
-$ cat pandoc-listof-sample.md
-% Sample use of automatic creation of lists
-% Ch. Demko <chdemko@gmail.com>
-% 04/11/2015
-
-This is the first section
-=========================
-
-<span id="exercise:1">**Exercise 1**</span>
-
-This is the first exercise.
-
-<span id="theorem:1">**Theorem 1**</span>
-
-This is the first theorem.
-
-<span id="exercise:2">**Exercise 2**</span>
-
-This is the second exercise.
-
-This is the second section
-==========================
-
-<span id="exercise:3">**Exercise 3**</span>
-
-This is the third exercise.
-
-<span id="theorem:2">**Theorem 2**</span>
-
-This is the second theorem.
-
-List of exercices
-=================
-
-{exercise}
-
-List of theorems
-================
-
-{theorem}
-
-Unchanged
-=========
-
-{{theorem}
-~~~
-
-Converting the `pandoc-listof-sample.md` file will give:
-
-~~~
-This is the first section
-=========================
-
-<span id="exercise:1">**Exercise 1**</span>
-
-This is the first exercise.
-
-<span id="theorem:1">**Theorem 1**</span>
-
-This is the first theorem.
-
-<span id="exercise:2">**Exercise 2**</span>
-
-This is the second exercise.
-
-This is the second section
-==========================
-
-<span id="exercise:3">**Exercise 3**</span>
-
-This is the third exercise.
-
-<span id="theorem:2">**Theorem 2**</span>
-
-This is the second theorem.
-
-List of exercices
-=================
-
--   [Exercise 1](#exercise:1)
--   [Exercise 2](#exercise:2)
--   [Exercise 3](#exercise:3)
-
-List of theorems
-================
-
--   [Theorem 1](#theorem:1)
--   [Theorem 2](#theorem:2)
-
-Unchanged
-=========
-
-{theorem}
-~~~
-
-This filter can be combined with [pandoc-numbering](https://github.com/chdemko/pandoc-numbering):
-
-~~~
-$ cat pandoc-numbering-listof-sample.md
-% Sample use of automatic creation of lists
-% Ch. Demko <chdemko@gmail.com>
-% 04/11/2015
-
-This is the first section
-=========================
-
-Exercise #
-
-This is the first exercise.
-
-Theorem #
-
-This is the first theorem.
-
-Exercise #
-
-This is the second exercise.
-
-This is the second section
-==========================
-
-Exercise #
-
-This is the third exercise.
-
-Theorem #
-
-This is the second theorem.
-
-List of exercices
-=================
-
-{exercise}
-
-List of theorems
-================
-
-{theorem}
-
-Unchanged
-=========
-
-{{theorem}
-
-Exercise ##
-~~~
-
-Converting the `pandoc-numbering-listof-sample.md` file will give:
-
-~~~
-$ pandoc \
-> --filter pandoc-numbering \
-> --filter pandoc-listof \
-> pandoc-numbering-listof-sample.md -t markdown
-This is the first section
-=========================
-
-<span id="exercise:1">**Exercise 1**</span>
-
-This is the first exercise.
-
-<span id="theorem:1">**Theorem 1**</span>
-
-This is the first theorem.
-
-<span id="exercise:2">**Exercise 2**</span>
-
-This is the second exercise.
-
-This is the second section
-==========================
-
-<span id="exercise:3">**Exercise 3**</span>
-
-This is the third exercise.
-
-<span id="theorem:2">**Theorem 2**</span>
-
-This is the second theorem.
-
-List of exercices
-=================
-
--   [Exercise 1](#exercise:1)
--   [Exercise 2](#exercise:2)
--   [Exercise 3](#exercise:3)
-
-List of theorems
-================
-
--   [Theorem 1](#theorem:1)
--   [Theorem 2](#theorem:2)
-
-Unchanged
-=========
-
-{theorem}
-
-Exercise \#
-~~~
-
-This version of pandoc-listof was tested using pandoc 1.15.1 and pandoc 1.16 and is known to work under linux, Mac OS X and Windows.
-
 [pandoc]: http://pandoc.org/
-[pandoc-listof-sample.md]: https://raw.githubusercontent.com/chdemko/pandoc-listof/master/pandoc-listof-sample.md
+
+Documentation
+-------------
+
+See the [wiki pages](https://github.com/chdemko/pandoc-listof/wiki).
 
 Usage
 -----
@@ -225,7 +26,7 @@ To apply the filter, use the following option with pandoc:
 Installation
 ------------
 
-pandoc-listof requires [python], a programming language that comes pre-installed on linux and Mac OS X, and which is easily installed [on Windows].  Either python 2.7 or 3.x will do.
+pandoc-listof requires [python], a programming language that comes pre-installed on linux and Mac OS X, and which is easily installed [on Windows]. Either python 2.7 or 3.x will do.
 
 Install pandoc-listof as root using the bash command
 

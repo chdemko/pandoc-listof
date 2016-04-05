@@ -13,8 +13,11 @@ import codecs
 import json
 import re
 import unicodedata
+import subprocess
 
 collections = {}
+headers = [0, 0, 0, 0, 0, 0]
+headers2 = [0, 0, 0, 0, 0, 0]
 
 def stringify(x, format):
     """Walks the tree x and returns concatenated string content,
@@ -45,8 +48,18 @@ def stringify(x, format):
     return ''.join(result)
 
 def collect(key, value, format, meta):
+    global headers
+
+    # Is it a header? Keep the correct numbered headers in the headers array
+    if key == 'Header':
+        [level, [id, classes, attributes], content] = value
+        if 'unnumbered' not in classes:
+            headers[level - 1] = headers[level - 1] + 1
+            for index in range(level, 6):
+                headers[index] = 0
+
     # Is it a link with a right tag?
-    if key == 'Span':
+    elif key == 'Span':
 
         # Get the Span
         [[anchor, classes, other], text] = value
@@ -62,29 +75,69 @@ def collect(key, value, format, meta):
             # Compute the identifier
             identifier = result.group(2)
 
-            # Prepare the new collection if needed
-            if name not in collections:
-                collections[name] = []
-
             # Store the new item
             string = stringify(deepcopy(text), format)
-            collections[name].append({'identifier': identifier, 'text': string})
+            
+            # Prepare the names
+            names = []
+
+            # Add the atomic name to the list
+            names.append(name)
+
+            # Prepare the latex output
+            if format == 'latex':
+               latex = '\\phantomsection\\addcontentsline{' + name + '}{figure}{' + string + '}'
+
+            # Loop on all the headers
+            for i in [0, 1, 2, 3, 4, 5]:
+                if headers[i] > 0:
+                    # Add an alternate name to the list
+                    altName = name + ':' + '.'.join(map(str, headers[:i+1]))
+                    names.append(altName)
+                    if format == 'latex':
+                       # Complete the latex output
+                       latex = latex + '\\phantomsection\\addcontentsline{' + altName + '}{figure}{' + string + '}'
+                       latex = latex + '\\phantomsection\\addcontentsline{' + altName + '_}{figure}{' + string + '}'
+                else:
+                    break
+
+            for name in names:
+                # Prepare the new collections if needed
+                if name not in collections:
+                    collections[name] = []
+                collections[name].append({'identifier': identifier, 'text': string})
 
             # Special case for LaTeX output
             if format == 'latex':
-                latex = '\\phantomsection\\addcontentsline{' + name + '}{figure}{' + string + '}'
                 text.insert(0, RawInline('tex', latex))
                 value[1] = text
 
 def listof(key, value, format, meta):
+    global headers2
+
+    # Is it a header?
+    if key == 'Header':
+        [level, [id, classes, attributes], content] = value
+        if 'unnumbered' not in classes:
+            headers2[level - 1] = headers2[level - 1] + 1
+            for index in range(level, 6):
+                headers2[index] = 0
+
     # Is it a paragraph with only one string?
     if key == 'Para' and len(value) == 1 and value[0]['t'] == 'Str':
 
         # Is it {tag}?
-        if re.match('^{[a-zA-Z][\w.-]*}$', value[0]['c']):
+        result = re.match('^{(?P<name>(?P<prefix>[a-zA-Z][\w.-]*)(?P<section>\:((?P<sharp>#(\.#)*)|(\d+(\.\d+)*)))?)}$', value[0]['c'])
+        if result:
+
+            prefix = result.group('prefix')
 
             # Get the collection name
-            name = value[0]['c'][1:-1]
+            if result.group('sharp') == None:
+                name = result.group('name')
+            else:
+                level = (len(result.group('sharp')) - 1) // 2 + 1
+                name = prefix + ':' + '.'.join(map(str, headers2[:level]))
 
             # Is it an existing collection
             if name in collections:
@@ -92,10 +145,14 @@ def listof(key, value, format, meta):
                 if format == 'latex':
                     # Special case for LaTeX output
                     if 'toccolor' in meta:
-                        colorlink = '\\hypersetup{linkcolor=' + stringify(meta['toccolor']['c'], format) + '}'
+                        linkcolor = '\\hypersetup{linkcolor=' + stringify(meta['toccolor']['c'], format) + '}'
                     else:
-                        colorlink = '\\hypersetup{linkcolor=black}'
-                    return Para([RawInline('tex', colorlink + '\\makeatletter\\@starttoc{' + name + '}\\makeatother')])
+                        linkcolor = '\\hypersetup{linkcolor=black}'
+                    if result.group('sharp') == None:
+                        suffix = ''
+                    else:
+                        suffix = '_'
+                    return Para([RawInline('tex', linkcolor + '\\makeatletter\\@starttoc{' + name + suffix + '}\\makeatother')])
 
                 else:
                     # Prepare the list
@@ -105,12 +162,12 @@ def listof(key, value, format, meta):
                     for value in collections[name]:
 
                         # Add an item to the list
-                        try:
+                        if pandoc_version() < '1.16':
                             # pandoc 1.15
-                            link = Link([Str(value['text'])],['#' + name + ':' + value['identifier'], ''])
-                        except ValueError:
+                            link = Link([Str(value['text'])], ['#' + prefix + ':' + value['identifier'], ''])
+                        else:
                             # pandoc 1.16
-                            link = Link(['', [], []], [Str(value['text'])],['#' + name + ':' + value['identifier'], ''])
+                            link = Link(['', [], []], [Str(value['text'])], ['#' + prefix + ':' + value['identifier'], ''])
 
                         elements.append([Plain([link])])
 
@@ -120,6 +177,14 @@ def listof(key, value, format, meta):
         # Special case where the paragraph start with '{{...'
         elif re.match('^{{[a-zA-Z][\w.-]*}$', value[0]['c']):
             value[0]['c'] = value[0]['c'][1:]
+
+def pandoc_version():
+    if not hasattr(pandoc_version, "version"):
+        p = subprocess.Popen(['pandoc', '-v'], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        pandoc_version.version = re.search(b'pandoc (?P<version>.*)', out).group('version').decode('utf-8')
+    return pandoc_version.version
+
 
 def main():
     toJSONFilters([collect, listof])
