@@ -10,7 +10,7 @@ def init():
     pandoc_listof.headers = [0, 0, 0, 0, 0, 0]
 
 def createLink(attributes, text, reference_title):
-    if pandoc_listof.pandoc_version() < '1.16':
+    if pandoc_listof.pandocVersion() < '1.16':
         return Link(text, reference_title)
     else:
         return Link(attributes, text, reference_title)

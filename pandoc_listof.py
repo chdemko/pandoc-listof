@@ -162,7 +162,7 @@ def listof(key, value, format, meta):
                     for value in collections[name]:
 
                         # Add an item to the list
-                        if pandoc_version() < '1.16':
+                        if pandocVersion() < '1.16':
                             # pandoc 1.15
                             link = Link([Str(value['text'])], ['#' + prefix + ':' + value['identifier'], ''])
                         else:
@@ -178,12 +178,12 @@ def listof(key, value, format, meta):
         elif re.match('^{{[a-zA-Z][\w.-]*}$', value[0]['c']):
             value[0]['c'] = value[0]['c'][1:]
 
-def pandoc_version():
-    if not hasattr(pandoc_version, "version"):
+def pandocVersion():
+    if not hasattr(pandocVersion, 'value'):
         p = subprocess.Popen(['pandoc', '-v'], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         out, err = p.communicate()
-        pandoc_version.version = re.search(b'pandoc (?P<version>.*)', out).group('version').decode('utf-8')
-    return pandoc_version.version
+        pandocVersion.value = re.search(b'pandoc (?P<version>.*)', out).group('version').decode('utf-8')
+    return pandocVersion.value
 
 
 def main():
