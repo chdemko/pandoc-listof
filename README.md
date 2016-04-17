@@ -8,7 +8,7 @@
 [![Python version](https://img.shields.io/pypi/pyversions/pandoc-listof.svg)](https://pypi.python.org/pypi/pandoc-listof/)
 [![Development Status](https://img.shields.io/pypi/status/pandoc-listof.svg)](https://pypi.python.org/pypi/pandoc-listof/)
 
-*pandoc-listof* is a [pandoc] filter for listof all kinds of things.
+*pandoc-listof* is a [pandoc] filter for creating lists of all kinds of things.
 
 [pandoc]: http://pandoc.org/
 
