@@ -27,9 +27,9 @@ To apply the filter, use the following option with pandoc:
 Installation
 ------------
 
-pandoc-listof requires [python], a programming language that comes pre-installed on linux and Mac OS X, and which is easily installed [on Windows]. Either python 2.7 or 3.x will do.
+*pandoc-listof* requires [python], a programming language that comes pre-installed on linux and Mac OS X, and which is easily installed [on Windows]. Either python 2.7 or 3.x will do.
 
-Install pandoc-listof as root using the bash command
+Install *pandoc-listof* as root using the bash command
 
     pip install pandoc-listof 
 
@@ -50,6 +50,6 @@ To upgrade to the most recent release, use
 Getting Help
 ------------
 
-If you have any difficulties with pandoc-listof, please feel welcome to [file an issue] on github so that we can help.
+If you have any difficulties with *pandoc-listof*, please feel welcome to [file an issue] on github so that we can help.
 
 [file an issue]: https://github.com/chdemko/pandoc-listof/issues
