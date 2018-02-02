@@ -12,6 +12,8 @@
 
 [pandoc]: http://pandoc.org/
 
+This package is no more maintained!
+
 Documentation
 -------------
 
